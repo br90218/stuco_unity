@@ -5,6 +5,7 @@ public class Fractal : MonoBehaviour {
 
     public Mesh mesh;
     public Material material;
+    public GameObject something;
     public int maxDepth;
     public float childScale;
     public float generateSpeed;
@@ -28,11 +29,12 @@ public class Fractal : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		gameObject.AddComponent<MeshFilter> ().mesh = mesh;
-		gameObject.AddComponent<MeshRenderer> ().material = material;
-        GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.white, Color.blue, (float)depth / maxDepth);
+      //  gameObject.AddComponent<MeshFilter>().mesh = GetComponent<MeshFilter>().mesh;
+      //  gameObject.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
+      //  GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.white, Color.blue, (float)depth / maxDepth);
+
 		if (depth < maxDepth) {
-            StartCoroutine(createChildren(this));
+            StartCoroutine(createChildren(something));
 		}
 
 	}
@@ -42,14 +44,16 @@ public class Fractal : MonoBehaviour {
 	
 	}
 
-    IEnumerator createChildren(Fractal parent)
+    IEnumerator createChildren(GameObject parent)
     {
         int random = (int)Random.Range(0f, 4.99f);
         for(int i=0; i<5; i++)
         {
             random = (random + 1) % 5;
-            yield return new WaitForSeconds(parent.generateSpeed);
-            new GameObject("Fractal Child").AddComponent<Fractal>().initialize(this, growingDirections[random], growingRotations[random]);
+            yield return new WaitForSeconds(parent.GetComponent<Fractal>().generateSpeed);
+            //new GameObject("Fractal Child").AddComponent<Fractal>().initialize(this, growingDirections[random], growingRotations[random]);
+            GameObject newChild = GameObject.Instantiate(parent, parent.transform.position + growingDirections[random], growingRotations[random]) as GameObject;
+            newChild.transform.SetParent(this.transform);
         }
     }
 
